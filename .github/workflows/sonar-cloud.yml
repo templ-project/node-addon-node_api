@@ -1,0 +1,39 @@
+# From https://docs.sonarqube.org/latest/analysis/languages/cfamily/ we learn that
+# The Build Wrapper collects information about the build including absolute file paths (source files, standard headers,
+# libraries, etc...). Later on, SonarScanner uses this information and needs to access those paths. Whereas this is
+# straightforward while running these 2 steps on the same host, it is worth some consideration when using any sort of
+# containerization. A consequence of this is that C / C++ / Objective-C analysis is NOT supported by SonarScanner CLI
+# Docker image.
+
+name: SonarCloud
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Init
+        run: npm i
+      - name: Code Analysis
+        run: npm run lint:log || true
+      - name: Code UnitTests
+        run: npm run test
+      - name: Build Wrapper
+        run: build-wrapper-linux-x86-64 --out-dir bw-output npm run build
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
