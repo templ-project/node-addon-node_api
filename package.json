@@ -26,7 +26,7 @@
     "lint:watch": "nodemon --exec 'npm run lint'",
     "lint:write": "npm run lint:cpp:write && npm run lint:js:write",
     "lint": "npm run lint:cpp && npm run lint:js",
-    "postinstall": "node ./.scripts/clang-link.js",
+    "postinstall": "node ./.scripts/clang-link.js; husky install",
     "prebuild:dev": "npm run clean",
     "prebuild": "npm run clean",
     "prebuildc:dev": "npm run clean",
