@@ -1,7 +1,7 @@
 {
-  "name": "templ-project-nodejs-addon-nan",
+  "name": "templ-project-nodejs-addon-node-api",
   "version": "0.0.3",
-  "description": "NodeJs Addon Project Template using NAN",
+  "description": "NodeJs Addon Project Template using Node Addon Api",
   "main": "dist/index.js",
   "scripts": {
     "build:dev": "npm run build-gyp -- --debug",
@@ -51,7 +51,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/templ-project/node-addon-nan.git"
+    "url": "https://github.com/templ-project/node-addon-node_api.git"
   },
   "author": "Dragos Cirjan",
   "license": "MIT",
@@ -98,6 +98,6 @@
   "peerDependencies": {},
   "dependencies": {
     "bindings": "^1.5.0",
-    "nan": "^2.14.2"
+    "node-addon-api": "^3.2.1"
   }
 }

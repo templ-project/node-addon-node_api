@@ -4,9 +4,24 @@ const path = require('path');
 if (process.argv.includes('-h') || process.argv.includes('--help')) {
   console.log(`node vscode-config.js
   Arguments:
+  --use-clangd will configure VSCode based on the Clangd extension (default is Microsoft C/C++)
   --use-cmake-js will configure VSCode based on cmake-js (default is node-gyp)
-  --use-clangd will configure VSCode based on the Clangd extension (default is Microsoft C/C++)`);
+`);
   process.exit(0);
+}
+
+if (process.argv.includes('--use-cmake-js')) {
+  let cMakeListsTxtExists = false;
+  try {
+    cMakeListsTxtExists = fs.statSync(path.join(__dirname, '..', 'CMakeLists.txt')).isFile();
+  } catch (e) {}
+
+  if (!cMakeListsTxtExists) {
+    fs.copyFileSync(
+      path.join(__dirname, '..', 'CMakeLists.txt.template'),
+      path.join(__dirname, '..', 'CMakeLists.txt'),
+    );
+  }
 }
 
 const {

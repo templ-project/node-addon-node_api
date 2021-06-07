@@ -8,6 +8,15 @@ if (process.argv.includes('-h') || process.argv.includes('--help')) {
   process.exit(0);
 }
 
+let cMakeListsTxtExists = false;
+try {
+  cMakeListsTxtExists = fs.statSync(path.join(__dirname, '..', 'CMakeLists.txt')).isFile();
+} catch (e) {}
+
+if (!cMakeListsTxtExists) {
+  fs.copyFileSync(path.join(__dirname, '..', 'CMakeLists.txt.template'), path.join(__dirname, '..', 'CMakeLists.txt'));
+}
+
 const {
   parseCMakeJsSettingsAndConfigureIde,
   parseNodeGypSettingsAndConfigureIde,

@@ -33,14 +33,18 @@ function parseCMakeJsSettingsAndConfigureIde(callback) {
   let includes = [];
 
   // if (process.platform !== 'win32') {
-  const cMakeCachePath = path.join(__dirname, '..', 'build', 'CMakeCache.txt');
+  const cMakeCachePath = path.join(__dirname, '..', 'build', 'CMakeFiles', 'main.dir', 'flags.make');
   const matches = fs
     .readFileSync(cMakeCachePath)
     .toString()
-    .match(/CMAKE_JS_INC:UNINITIALIZED=.+/gi);
+    .match(/CXX_INCLUDES = .+/gi);
 
   if (Array.isArray(matches) && matches.length > 0) {
-    includes = matches[0].split('=')[1].split(';');
+    includes = matches[0]
+      .split(' = ')[1]
+      .split(' ')
+      .filter((s) => s)
+      .map((s) => s.substr(2));
   } else {
     console.error('Could not read CMakeCache.txt. No included discovered');
     process.exit(1);
@@ -115,8 +119,8 @@ function parseMainVcxproj() {
         .split(';'),
     )
     .reduce((a, b) => [...new Set([...a, ...b])], [])
-    .map(l => path.isAbsolute(l) ? l : path.join(__dirname, l))
-    .map(l => l.replace(/\\/ig, '/'));
+    .map((l) => (path.isAbsolute(l) ? l : path.join(__dirname, l)))
+    .map((l) => l.replace(/\\/gi, '/'));
 }
 
 function writeCMakeListsTxt(includes) {
