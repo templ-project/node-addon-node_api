@@ -4,43 +4,29 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "(Linux/Darwin :: mocha + lldb) Launch",
+      "name": "(Darwin/Linux/Windows :: mocha + lldb) Launch",
       "preLaunchTask": "npm: build:dev",
-      "program": "/usr/bin/node",
-      "args": ["${workspaceFolder}/node_modules/mocha/bin/mocha", "./test/index.test.js"],
-      "cwd": "${workspaceFolder}"
-    }
-    {
-      "name": "(Linux/Darwin :: mocha + gdb) Launch",
-      "type": "cppdbg",
-      "request": "launch",
-      "preLaunchTask": "npm: build:dev",
-      "program": "/usr/bin/node",
+      "program": "node",
       "args": ["${workspaceFolder}/node_modules/mocha/bin/mocha", "./test/index.test.js"],
       "cwd": "${workspaceFolder}"
     },
-    // {
-    //   "name": "(Windows / cppvsdbg) Launch",
-    //   "type": "cppvsdbg",
-    //   "request": "launch",
-    //   "preLaunchTask": "npm: build:dev",
-    //   "program": "C:/Program Files/nodejs/node.exe",
-    //   "args": ["${workspaceFolder}/debug/x509_run.js"],
-    //   "stopAtEntry": false,
-    //   "cwd": "${workspaceFolder}",
-    //   "environment": [],
-    //   "externalConsole": false
-    // },
-    // {
-    //   "type": "lldb",
-    //   "request": "launch",
-    //   "name": "(Windows / lldb) Launch",
-    //   "preLaunchTask": "npm: build:dev",
-    //   "program": "C:/Program Files/nodejs/node.exe",
-    //   "args": ["${workspaceFolder}/debug/x509_run.js"]
-    //   // "console": "integratedTerminal",
-    //   // "internalConsoleOptions": "neverOpen",
-    //   // "protocol": "inspector"
-    // }
+    {
+      "name": "(Darwin/Linux :: mocha + gdb) Launch",
+      "type": "cppdbg",
+      "request": "launch",
+      "preLaunchTask": "npm: build:dev",
+      "program": "node",
+      "args": ["${workspaceFolder}/node_modules/mocha/bin/mocha", "./test/index.test.js"],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "(Windows / cppvsdbg) Launch",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "preLaunchTask": "npm: build:dev",
+      "program": "node",
+      "args": ["${workspaceFolder}/node_modules/mocha/bin/mocha", "./test/index.test.js"],
+      "cwd": "${workspaceFolder}"
+    }
   ]
 }

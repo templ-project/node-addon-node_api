@@ -5,13 +5,17 @@
 - [Configuring CLion for developing a NodeJs C++ Addon](#configuring-clion-for-developing-a-nodejs-c-addon)
   - [CMake](#cmake)
   - [Configuring the project in CLion](#configuring-the-project-in-clion)
-    - [Open Project Wizzard](#open-project-wizzard)
+    - [Open Project Wizard](#open-project-wizard)
+      - [Windows](#windows)
     - [Run/Debug Configuration](#rundebug-configuration)
 
 <!-- /TOC -->
 
-CLion is a very gifted C/C++ IDE. In it's case, we decided to go with CMake support in order to be able to properly develop. 
-
+> CLion is a very gifted C/C++ IDE. However we could not make clion work with `node-gyp`. Instead, when using CLion, please use `node .scripts/clion-config.js --use-cmake-js` for now.
+> 
+> You can still use `node-gyp` to build the project, but CLion needs to be configured using `cmake-js`. We hope to fix this soon.
+> 
+> By default, CLion is configured to use CMake
 
 ### CMake
 
@@ -41,13 +45,21 @@ endif()
 
 ### Configuring the project in CLion
 
-#### Open Project Wizzard
+#### Open Project Wizard
 
 When opening the project, during the **Open Project Wizzard** process, please set the `Build directory` to `build` as shown in the image bellow.
 
 This will enable nodejs to properly read the compiled libraries.
 
 <img src="manual/../open_project_wizard.png">
+
+##### Windows
+
+For Windows, CLion uses as generator for CMake `CodeBlocks - NMake Makefiles` by default which is not the one `cmake-js` will choose.
+
+In my case `cmake-js` chose `Visual Studio 16 2019` as generator, so you will also need to set the CMake generator, by adding something like `-G "Visual Studio 16 2019"` in the `CMake Options` field.
+
+<img src="manual/../open_project_wizard_windows.png">
 
 #### Run/Debug Configuration
 
