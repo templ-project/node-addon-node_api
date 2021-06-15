@@ -27,52 +27,18 @@ scripts:
   - npm install
   - npm run ca
   - npm run test
-  # - npm run build
-# after_script:
-#   - "if [[ $TRAVIS_NODE_VERSION == '14' && $TRAVIS_OS_NAME == 'linux' ]]; then
-#       npm run docs;
-#       # sonar-scanner;
-#     fi"
+  - npm run build
+after_script:
+  - "if [[ $TRAVIS_NODE_VERSION == '14' && $TRAVIS_OS_NAME == 'linux' ]]; then
+      npm run docs;
+      # sonar-scanner;
+    fi"
 notifications:
   email:
     recipients:
       - dragos.cirjan@gmail.com
     on_success: never
     on_failure: always
-
-# language: node_js
-# os:
-#   - linux
-#   # - osx
-#   # - windows
-# node_js: # a good example: https://github.com/pillarjs/router/blob/master/.travis.yml
-#   - "12"
-#   - "14"
-#   - "16"
-#   - lts/*
-#   - node
-# compiler:
-#   -
-# sudo: false
-# cache:
-#   directories:
-#     - node_modules
-# scripts:
-#   - set -e
-#   - npm run ca
-#   - npm run test
-#   - npm run build
-# after_script:
-#   - "if [[ $TRAVIS_NODE_VERSION == '14' && $TRAVIS_OS_NAME == 'linux' ]]; then
-#       npm run docs;
-#       # sonar-scanner;
-#     fi"
-# notifications:
-#   email:
-#     recipients:
-#       - dragos.cirjan@gmail.com
-#     on_success: never
-#     on_failure: always
 # addons:
 #   sonarcloud:
 #     organization: "templ-project"
