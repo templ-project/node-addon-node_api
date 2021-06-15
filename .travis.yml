@@ -9,12 +9,12 @@ node_js: # a good example: https://github.com/pillarjs/router/blob/master/.travi
   - "16"
   - lts/*
   - node
+compiler:
+  -
 sudo: false
 cache:
   directories:
     - node_modules
-before_install:
-  - apt-get install -y make build-essential
 scripts:
   - set -e
   - npm run ca
