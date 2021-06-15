@@ -26,6 +26,7 @@ scripts:
   - node --version
   - npm --version
   - clang-format --version
+  - python --version
   # - npm run ca
   # - npm run test
   # - npm run build
