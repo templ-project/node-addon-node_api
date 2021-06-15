@@ -31,8 +31,7 @@ scripts:
 after_script:
   - "if [[ $TRAVIS_NODE_VERSION == '14' && $TRAVIS_OS_NAME == 'linux' ]]; then
       npm run docs;
-      # sonar-scanner;
-    fi"
+    fi # sonar-scanner;"
 notifications:
   email:
     recipients:
