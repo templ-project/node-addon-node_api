@@ -9,20 +9,23 @@ sudo: false
 cache:
   directories:
     - node_modules
+    - ~/.clangd
 scripts:
   - set -e
   - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $NODE_VERSION
   - PATH="`npm bin`:`npm bin -g`:$PATH"
-  # - if [[ ! -d ~/.clang ]]; then
-  #     rm -rf ~/.configs \
-  #     && git clone https://github.com/dragoscirjan/configs --branch v2 .configs \
-  #     && (cd .configs/lang && make clang CLANG_FOLDER=~/.clang)
-  #   fi
+  - if [[ ! -d ~/.clang ]]; then
+      rm -rf ~/.configs
+      git clone https://github.com/dragoscirjan/configs --branch v2 .configs
+      cd .configs/lang && make clang CLANG_FOLDER=~/.clang
+    fi
+  - PATH="`find ~/.clang -mindepth 1 -maxdepth 1 -type d -iname 'clang*'`/bin:$PATH"
   # - $CXX --version
   # Install dependencies and build
   # - npm install
   - node --version
   - npm --version
+  - clang-format --version
   # - npm run ca
   # - npm run test
   # - npm run build
