@@ -2,11 +2,25 @@ const {spawn} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+function folderExists(c) {
+  // console.log(c);
+  try {
+    return fs.statSync(c).isDirectory();
+  } catch (e) {
+    return null;
+  }
+}
+
 function runConfigure(tool, callback) {
   console.log(`Running '${tool}' configuration...`);
-  const npx = spawn(path.join(`.`, `node_modules`, '.bin', process.platform !== 'win32' ? tool : `${tool}.cmd`), [
+  const command = [
+    path.join(`.`, `node_modules`, '.bin', process.platform !== 'win32' ? tool : `${tool}.cmd`),
     'configure',
-  ]);
+    // https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
+    ...(tool === 'cmake-js' && process.env.NODE_CMAKE_GENERATOR ? ['-G', process.env.NODE_CMAKE_GENERATOR] : []),
+  ];
+  console.log('Running', command);
+  const npx = spawn(command[0], command.slice(1));
   let config = '';
 
   npx.stdout.on('data', (data) => {
@@ -32,30 +46,38 @@ function parseCMakeJsSettingsAndConfigureIde(callback) {
 
   let includes = [];
 
-  // if (process.platform !== 'win32') {
-  const cMakeCachePath = path.join(__dirname, '..', 'build', 'CMakeFiles', 'main.dir', 'flags.make');
-  const matches = fs
-    .readFileSync(cMakeCachePath)
-    .toString()
-    .match(/CXX_INCLUDES = .+/gi);
+  if (process.platform !== 'win32') {
+    includes = parseCMakeFilesMainDirFlagsMake();
+  } else {
+    includes = parseMainVcxproj();
+  }
+
+  console.log('Done.');
+
+  callback(includes.filter(folderExists).map((l) => l.replace(/\\/gi, '/')));
+}
+
+function parseCMakeFilesMainDirFlagsMake() {
+  let matches = [];
+  try {
+    const cMakeCachePath = path.join(__dirname, '..', 'build', 'CMakeFiles', 'main.dir', 'flags.make');
+
+    matches = fs
+      .readFileSync(cMakeCachePath)
+      .toString()
+      .match(/CXX_INCLUDES = .+/gi);
+  } catch (e) {}
 
   if (Array.isArray(matches) && matches.length > 0) {
-    includes = matches[0]
+    return matches[0]
       .split(' = ')[1]
       .split(' ')
       .filter((s) => s)
       .map((s) => s.substr(2));
-  } else {
-    console.error('Could not read CMakeCache.txt. No included discovered');
-    process.exit(1);
   }
-  // } else {
-  //   // TODO:
-  // }
 
-  console.log('Done.');
-
-  callback(includes);
+  console.error('Could not read CMakeFiles\\main.dir\\flags.make. No included discovered');
+  process.exit(1);
 }
 
 function parseNodeGypSettingsAndConfigureIde(callback) {
@@ -68,7 +90,7 @@ function parseNodeGypSettingsAndConfigureIde(callback) {
   }
   console.log('Done.');
 
-  callback(includes);
+  callback(includes.filter(folderExists).map((l) => l.replace(/\\/gi, '/')));
 }
 
 function parseMainTargetMk() {
@@ -95,32 +117,29 @@ function parseMainTargetMk() {
         .replace('$(srcdir)', path.join(__dirname, '..')),
     )
     .filter((c) => c)
-    .filter((c) => c != localSrc)
-    .filter((c) => {
-      try {
-        return fs.statSync(c).isDirectory();
-      } catch (e) {
-        return null;
-      }
-    });
+    .filter((c) => c != localSrc);
 }
 
 function parseMainVcxproj() {
-  return fs
-    .readFileSync(path.join(__dirname, '..', 'build', 'main.vcxproj'))
-    .toString()
-    .split('\n')
-    .filter((l) => l.includes('AdditionalIncludeDirectories'))
-    .map((l) =>
-      l
-        .replace(/<\/?AdditionalIncludeDirectories>/gi, '')
-        .replace(/;%\(AdditionalIncludeDirectories\)/gi, '')
-        .trim()
-        .split(';'),
-    )
-    .reduce((a, b) => [...new Set([...a, ...b])], [])
-    .map((l) => (path.isAbsolute(l) ? l : path.join(__dirname, l)))
-    .map((l) => l.replace(/\\/gi, '/'));
+  try {
+    return fs
+      .readFileSync(path.join(__dirname, '..', 'build', 'main.vcxproj'))
+      .toString()
+      .split('\n')
+      .filter((l) => l.includes('AdditionalIncludeDirectories'))
+      .map((l) =>
+        l
+          .replace(/<\/?AdditionalIncludeDirectories>/gi, '')
+          .replace(/;%\(AdditionalIncludeDirectories\)/gi, '')
+          .trim()
+          .split(';'),
+      )
+      .reduce((a, b) => [...new Set([...a, ...b])], [])
+      .map((l) => (path.isAbsolute(l) ? l : path.join(__dirname, l)));
+  } catch (e) {}
+
+  console.error('Could not read main.vcxproj. No included discovered');
+  process.exit(1);
 }
 
 function writeCMakeListsTxt(includes) {
