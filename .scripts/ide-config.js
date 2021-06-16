@@ -213,7 +213,7 @@ async function getCommandPath(command) {
   }
   const {stdout, code} = await pspawn([
     ...'powershell -ExecutionPolicy ByPass -Command'.split(' '),
-    `"Get-Command ${command}"`,
+    `(Get-Command ${command}).Source`,
   ]);
   if (!stdout || code !== 0) {
     return '';
