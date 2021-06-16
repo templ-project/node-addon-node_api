@@ -205,7 +205,7 @@ ${cmakeLines.join('\n')}
 
 async function getCommandPath(command) {
   if (process.platform !== 'win32') {
-    const {stdout, code} = await pspawn(['which', 'clang-tidy']);
+    const {stdout, code} = await pspawn(['which', command]);
     if (!stdout || code !== 0) {
       return '';
     }
@@ -213,7 +213,7 @@ async function getCommandPath(command) {
   }
   const {stdout, code} = await pspawn([
     ...'powershell -ExecutionPolicy ByPass -Command'.split(' '),
-    '"Get-Command clang-tidy"',
+    `"Get-Command ${command}"`,
   ]);
   if (!stdout || code !== 0) {
     return '';
