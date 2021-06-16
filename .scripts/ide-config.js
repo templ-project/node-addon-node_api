@@ -2,6 +2,8 @@ const {spawn} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+const cExtensions = ['c', 'cc', 'cpp', 'h', ...(process.env.CPP_EXTENSIONS || [])];
+
 function folderExists(c) {
   // console.log(c);
   try {
@@ -9,6 +11,38 @@ function folderExists(c) {
   } catch (e) {
     return null;
   }
+}
+
+/**
+ *
+ * @param {string} command
+ * @param {number} timeout
+ * @returns {{stdout: string, stderr: string, code: number}}
+ */
+async function pspawn(command, timeout = 5000) {
+  if (!Array.isArray(command) || command.length < 1) {
+    throw new Error('Invalid command');
+  }
+  return new Promise((resolve, reject) => {
+    const runner = spawn(command[0], command.slice(1));
+    let stdout = '';
+    let stderr = '';
+
+    const t = setTimeout(() => reject('Running command exceeded timeout'), timeout);
+
+    runner.stdout.on('data', (data) => {
+      stdout = `${stdout}${data}`;
+    });
+
+    runner.stderr.on('data', (data) => {
+      stderr = `${stderr}${data}`;
+    });
+
+    runner.on('close', (code) => {
+      clearTimeout(t);
+      resolve({stdout, stderr, code});
+    });
+  });
 }
 
 function runConfigure(tool, callback) {
@@ -57,29 +91,6 @@ function parseCMakeJsSettingsAndConfigureIde(callback) {
   callback(includes.filter(folderExists).map((l) => l.replace(/\\/gi, '/')));
 }
 
-function parseCMakeFilesMainDirFlagsMake() {
-  let matches = [];
-  try {
-    const cMakeCachePath = path.join(__dirname, '..', 'build', 'CMakeFiles', 'main.dir', 'flags.make');
-
-    matches = fs
-      .readFileSync(cMakeCachePath)
-      .toString()
-      .match(/CXX_INCLUDES = .+/gi);
-  } catch (e) {}
-
-  if (Array.isArray(matches) && matches.length > 0) {
-    return matches[0]
-      .split(' = ')[1]
-      .split(' ')
-      .filter((s) => s)
-      .map((s) => s.substr(2));
-  }
-
-  console.error('Could not read CMakeFiles\\main.dir\\flags.make. No included discovered');
-  process.exit(1);
-}
-
 function parseNodeGypSettingsAndConfigureIde(callback) {
   console.log('Reading configuration...');
   let includes = [];
@@ -93,6 +104,33 @@ function parseNodeGypSettingsAndConfigureIde(callback) {
   callback(includes.filter(folderExists).map((l) => l.replace(/\\/gi, '/')));
 }
 
+/**
+ * Parses cmake-js build project
+ * @returns {string[]}
+ */
+function parseCMakeFilesMainDirFlagsMake() {
+  let matches = [];
+
+  const cMakeCachePath = path.join(__dirname, '..', 'build', 'CMakeFiles', 'main.dir', 'flags.make');
+
+  matches = fs
+    .readFileSync(cMakeCachePath)
+    .toString()
+    .match(/CXX_INCLUDES = .+/gi);
+
+  return matches[0]
+    .split(' = ')[1]
+    .split(' ')
+    .filter((s) => s)
+    .map((s) => s.substr(2))
+    .filter(folderExists);
+}
+
+/**
+ * Parses node-gyp gcc (make) project
+ *
+ * @returns {string[]}
+ */
 function parseMainTargetMk() {
   const incsRelease = fs
     .readFileSync(path.join(__dirname, '..', 'build', 'main.target.mk'))
@@ -117,29 +155,31 @@ function parseMainTargetMk() {
         .replace('$(srcdir)', path.join(__dirname, '..')),
     )
     .filter((c) => c)
-    .filter((c) => c != localSrc);
+    .filter((c) => c != localSrc)
+    .filter(folderExists);
 }
 
+/**
+ * Parses Visual Studio project
+ *
+ * @returns {string[]}
+ */
 function parseMainVcxproj() {
-  try {
-    return fs
-      .readFileSync(path.join(__dirname, '..', 'build', 'main.vcxproj'))
-      .toString()
-      .split('\n')
-      .filter((l) => l.includes('AdditionalIncludeDirectories'))
-      .map((l) =>
-        l
-          .replace(/<\/?AdditionalIncludeDirectories>/gi, '')
-          .replace(/;%\(AdditionalIncludeDirectories\)/gi, '')
-          .trim()
-          .split(';'),
-      )
-      .reduce((a, b) => [...new Set([...a, ...b])], [])
-      .map((l) => (path.isAbsolute(l) ? l : path.join(__dirname, l)));
-  } catch (e) {}
-
-  console.error('Could not read main.vcxproj. No included discovered');
-  process.exit(1);
+  return fs
+    .readFileSync(path.join(__dirname, '..', 'build', 'main.vcxproj'))
+    .toString()
+    .split('\n')
+    .filter((l) => l.includes('AdditionalIncludeDirectories'))
+    .map((l) =>
+      l
+        .replace(/<\/?AdditionalIncludeDirectories>/gi, '')
+        .replace(/;%\(AdditionalIncludeDirectories\)/gi, '')
+        .trim()
+        .split(';'),
+    )
+    .reduce((a, b) => [...new Set([...a, ...b])], [])
+    .map((l) => (path.isAbsolute(l) ? l : path.join(__dirname, l)))
+    .filter(folderExists);
 }
 
 function writeCMakeListsTxt(includes) {
@@ -163,9 +203,33 @@ ${cmakeLines.join('\n')}
   console.log('Done.');
 }
 
+async function getCommandPath(command) {
+  if (process.platform !== 'win32') {
+    const {stdout, code} = await pspawn(['which', 'clang-tidy']);
+    if (!stdout || code !== 0) {
+      return '';
+    }
+    return stdout;
+  }
+  const {stdout, code} = await pspawn([
+    ...'powershell -ExecutionPolicy ByPass -Command'.split(' '),
+    '"Get-Command clang-tidy"',
+  ]);
+  if (!stdout || code !== 0) {
+    return '';
+  }
+  return stdout;
+}
+
 module.exports = {
+  cExtensions,
+  getCommandPath,
+  parseCMakeFilesMainDirFlagsMake,
   parseCMakeJsSettingsAndConfigureIde,
+  parseMainTargetMk,
+  parseMainVcxproj,
   parseNodeGypSettingsAndConfigureIde,
+  pspawn,
   runConfigure,
   writeCMakeListsTxt,
 };

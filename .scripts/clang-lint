@@ -1,41 +1,38 @@
-#! /bin/bash
-[ -z $DEBUG ] && [ "$DEBUG" != "" ] && set -xe
+# #! /bin/bash
+# [ -z $DEBUG ] && [ "$DEBUG" != "" ] && set -xe
 
-# https://clang.llvm.org/extra/clang-tidy/
-npx node-gyp configure >/dev/null 2>&1
+# # https://clang.llvm.org/extra/clang-tidy/
+# npx node-gyp configure >/dev/null 2>&1
 
-PWD=$(pwd)
+# PWD=$(pwd)
 
-CLANG_IMPORTS=$(cat build/main.target.mk \
-  | grep "\-I" \
-  | sed "s/\-I//g" \
-  | sed "s/ \\\\$//g" \
-  | sed "s/[[:space:]]*$//g" \
-  | sed "s/^[[:space:]]*//g" \
-  | sed "s|\$(srcdir)|${PWD}|g" \
-  | sort \
-  | while read f; do [[ -d $f ]] && echo " -I$f"; done \
-  | uniq \
-  | tr -d '\n')
+# CLANG_IMPORTS=$(cat build/main.target.mk \
+#   | grep "\-I" \
+#   | sed "s/\-I//g" \
+#   | sed "s/ \\\\$//g" \
+#   | sed "s/[[:space:]]*$//g" \
+#   | sed "s/^[[:space:]]*//g" \
+#   | sed "s|\$(srcdir)|${PWD}|g" \
+#   | sort \
+#   | while read f; do [[ -d $f ]] && echo " -I$f"; done \
+#   | uniq \
+#   | tr -d '\n')
 
+# which clang-tidy > /dev/null && CLANG=$(which clang-tidy)
+# which clang-tidy > /dev/null || CLANG=".scripts/clang/bin/clang-tidy"
 
-NAN_ROOT=$(pwd)
+# CLANG_ARGS="$@ -- $CLANG_IMPORTS $CLANG_CUSTOM_IMPORTS"
 
-which clang-tidy > /dev/null && CLANG=$(which clang-tidy)
-which clang-tidy > /dev/null || CLANG=".scripts/clang/bin/clang-tidy"
+# FILTER="-iname *.c"
 
-CLANG_ARGS="$@ -- $CLANG_IMPORTS $CLANG_CUSTOM_IMPORTS"
+# if [ ! -f "$CLANG" ]; then
+#   echo "Clang not found. Downloading..."
 
-FILTER="-iname *.c"
+#   ./.scripts/clang-install
 
-if [ ! -f "$CLANG" ]; then
-  echo "Clang not found. Downloading..."
-
-  ./.scripts/clang-install
-
-  echo
-  echo "Done."
-fi
+#   echo
+#   echo "Done."
+# fi
 
 for ext in cc cpp h; do FILTER="$FILTER -or -iname *.$ext"; done
 
