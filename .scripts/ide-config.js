@@ -19,7 +19,7 @@ function folderExists(c) {
  * @param {number} timeout
  * @returns {Promise<{stdout: string, stderr: string, code: number}>}
  */
-async function pspawn(command, timeout = 5000) {
+async function pspawn(command, timeout = 20000) {
   if (!Array.isArray(command) || command.length < 1) {
     throw new Error('Invalid command');
   }
