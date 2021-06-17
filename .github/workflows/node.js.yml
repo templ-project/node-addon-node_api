@@ -33,16 +33,14 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Make CLang Available
       run: sudo apt-get install -y clang-tidy clang-format
-    - name: Load new path
-      run: clang-format --version && clang-tidy --version
-    # - name: Init
-    #   run: npm i
-    # - name: Code Analysis
-    #   run: npm run ca
-    # - name: Code UnitTests
-    #   run: npm run test
-    # - name: Code Build
-    #   run: npm run build
-    # - name: Code Docs
-    #   if: ${{ matrix.node-version == '14.x' }}
-    #   run: npm run docs
+    - name: Init
+      run: npm i
+    - name: Code Analysis
+      run: npm run ca
+    - name: Code UnitTests
+      run: npm run test
+    - name: Code Build
+      run: npm run build
+    - name: Code Docs
+      if: ${{ matrix.node-version == '14.x' }}
+      run: npm run docs
