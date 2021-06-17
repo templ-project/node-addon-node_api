@@ -17,7 +17,7 @@ function folderExists(c) {
  *
  * @param {string} command
  * @param {number} timeout
- * @returns {{stdout: string, stderr: string, code: number}}
+ * @returns {Promise<{stdout: string, stderr: string, code: number}>}
  */
 async function pspawn(command, timeout = 5000) {
   if (!Array.isArray(command) || command.length < 1) {

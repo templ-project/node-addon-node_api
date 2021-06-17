@@ -14,23 +14,6 @@ const colors = require('colors');
 const debug = process.env.DEBUG ? true : false;
 
 async function main() {
-  // const includes = [parseMainVcxproj, parseMainTargetMk, parseCMakeFilesMainDirFlagsMake]
-  //   .reduce(
-  //     (acc, method) => {
-  //       if (!acc.done) {
-  //         try {
-  //           acc.includes = [...acc.includes, ...method()];
-  //           acc.done = true;
-  //         } catch (e) {
-  //           console.warn(e.message);
-  //         }
-  //       }
-  //       return acc;
-  //     },
-  //     {includes: [], done: false},
-  //   )
-  //   .includes.map((include) => `-I${include}`);
-
   const clangFormat = await getCommandPath('clang-format');
   if (!clangFormat) {
     // TODO: Add proper error
@@ -82,42 +65,3 @@ async function main() {
 }
 
 main();
-
-// #! /bin/bash
-// [ -z $DEBUG ] && [ "$DEBUG" != "" ] && set -xe
-
-// which clang-format > /dev/null && CLANG=$(which clang-format)
-// which clang-format > /dev/null || CLANG=".scripts/clang/bin/clang-format"
-
-// CLANG_ARGS="--verbose -style=file"
-
-// FILTER="-iname *.c"
-
-// if [ ! -f "$CLANG" ]; then
-//   echo "Clang not found. Downloading..."
-
-//   ./.scripts/clang-install
-
-//   echo
-//   echo "Done."
-// fi
-
-// for ext in cc cpp h; do FILTER="$FILTER -or -iname *.$ext"; done
-
-// echo "$@" | grep "\-i" > /dev/null && find ./src $FILTER | while read f; do
-//   cp $f /tmp/clang-format.tmp
-//   $CLANG $CLANG_ARGS $@ $f 2>&1 | sed '1d' > /dev/null
-
-//   diff /tmp/clang-format.tmp $f 2>&1 > /dev/null
-//   if [ $? -eq 0 ]; then
-//     echo -e "\e[2m$f\e[0m"
-//   else
-//     echo $f
-//   fi
-// done
-
-// echo "$@" | grep "\-i" > /dev/null || find ./src $FILTER | while read f; do
-//   echo -e "\e[2m$f\e[0m"
-
-//   $CLANG $CLANG_ARGS $@ $f 2>&1 | sed '1d'
-// done
