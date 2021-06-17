@@ -28,8 +28,12 @@ async function main() {
 
   const clangTidy = await getCommandPath('clang-tidy');
   if (!clangTidy) {
-    // TODO: Add proper error
-    console.error('Could not find clang-tidy.');
+    console.error('C++ linting & prettify are dependent on LLVM CLang binaries.'.red);
+    console.error(`Could not find 'clang-tidy'. Please install LLVM Clang from`.red);
+    console.error('https://github.com/llvm/llvm-project/releases'.yellow);
+    console.error('or run'.gray);
+    console.error('$ git clone https://github.com/dragoscirjan/configs --branch v2;'.gray);
+    console.error('$ cd config/lang; make clang'.gray);
     process.exit(1);
   }
 
