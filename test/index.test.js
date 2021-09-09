@@ -3,6 +3,10 @@ const {expect} = require('chai');
 const {hello} = require('../src');
 
 describe('hello', function () {
+  it('hello() to return "Hello World!"', function () {
+    expect(hello()).to.equal('Hello World!');
+  });
+
   it('hello("World") to return "Hello World!"', function () {
     expect(hello('World')).to.equal('Hello World!');
   });
