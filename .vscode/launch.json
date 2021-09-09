@@ -4,28 +4,47 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "(Darwin/Linux/Windows :: mocha + lldb) Launch",
+      "name": "(Darwin/Linux/Windows :: mocha + lldb) Launch All",
       "preLaunchTask": "npm: build:dev",
       "program": "node",
-      "args": ["${workspaceFolder}/node_modules/mocha/bin/mocha", "./test/index.test.js"],
+      "args": [
+        "${workspaceFolder}/node_modules/mocha/bin/mocha"
+      ],
       "cwd": "${workspaceFolder}"
     },
     {
-      "name": "(Darwin/Linux :: mocha + gdb) Launch",
+      "type": "lldb",
+      "request": "launch",
+      "name": "(Darwin/Linux/Windows :: mocha + lldb) Launch './test/index.test.js'",
+      "preLaunchTask": "npm: build:dev",
+      "program": "node",
+      "args": [
+        "${workspaceFolder}/node_modules/mocha/bin/mocha",
+        "./test/index.test.js"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
       "type": "cppdbg",
       "request": "launch",
+      "name": "(Darwin/Linux :: mocha + gdb) Launch All",
       "preLaunchTask": "npm: build:dev",
       "program": "node",
-      "args": ["${workspaceFolder}/node_modules/mocha/bin/mocha", "./test/index.test.js"],
+      "args": [
+        "${workspaceFolder}/node_modules/mocha/bin/mocha"
+      ],
       "cwd": "${workspaceFolder}"
     },
     {
-      "name": "(Windows / cppvsdbg) Launch",
-      "type": "cppvsdbg",
+      "type": "cppdbg",
       "request": "launch",
+      "name": "(Darwin/Linux :: mocha + gdb) Launch './test/index.test.js'",
       "preLaunchTask": "npm: build:dev",
       "program": "node",
-      "args": ["${workspaceFolder}/node_modules/mocha/bin/mocha", "./test/index.test.js"],
+      "args": [
+        "${workspaceFolder}/node_modules/mocha/bin/mocha",
+        "./test/index.test.js"
+      ],
       "cwd": "${workspaceFolder}"
     }
   ]

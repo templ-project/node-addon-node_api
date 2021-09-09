@@ -4,10 +4,12 @@
   "description": "NodeJs Addon Project Template using Node Addon Api",
   "main": "dist/index.js",
   "scripts": {
+    "build:addon": "npm run build:addon:cmake -- --verbose",
     "build:addon:cmake": "npx cmake-js configure && npx cmake-js build",
     "build:addon:gyp": "npx node-gyp configure && npx node-gyp build",
-    "build:dev": "npm run build:addon:gyp -- --debug",
-    "build": "npm run build:addon:gyp",
+    "build:addon:xmake": "xmake",
+    "build:dev": "npm run build:addon -- --debug",
+    "build": "npm run build:addon",
     "ca:lint": "npm run prettier:write && npm run lint:write",
     "ca:quality": "npm run jscpd && npm run depcruise",
     "ca:security": "npm run license-check && (npm audit --production || yarn audit --groups=dependencies)",
@@ -26,7 +28,7 @@
     "lint:watch": "nodemon --exec 'npm run lint'",
     "lint:write": "npm run lint:cpp:write && npm run lint:js:write",
     "lint": "npm run lint:cpp && npm run lint:js",
-    "prebuild:dev": "npm run clean",
+    "postinstall": "husky install",
     "prebuild": "npm run clean",
     "prebuildc:dev": "npm run clean",
     "prebuildc": "npm run clean",
@@ -46,7 +48,8 @@
     "test:junit": "npm run test -- --reporter mocha-junit-reporter --reporter-options mochaFile=.junit.xml",
     "test:single": "cross-env NODE_ENV=test nyc --reporter=html --reporter=lcov --reporter=text --extension .js mocha --forbid-only",
     "test:watch": "npm run test -- --watch",
-    "test": "npm run test:single -- './test/**/*.test.js'"
+    "test": "npm run test:single -- './test/**/*.test.js'",
+    "install": "npm run build:addon "
   },
   "repository": {
     "type": "git",
@@ -70,6 +73,7 @@
     "chai": "^4.3.4",
     "cmake-js": "^6.1.0",
     "colors": "^1.4.0",
+    "commander": "^8.1.0",
     "cross-env": "^7.0.3",
     "dependency-cruiser": "^10.0.1",
     "docsify-cli": "^4.4.3",
@@ -87,6 +91,7 @@
     "license-checker": "^25.0.1",
     "mocha": "^8.4.0",
     "mocha-junit-reporter": "^2.0.0",
+    "node-cmake": "^2.5.1",
     "node-gyp": "^8.1.0",
     "nodemon": "^2.0.7",
     "nyc": "^15.1.0",
@@ -94,6 +99,7 @@
     "release-it": "^14.6.2",
     "rimraf": "^3.0.2",
     "sonarqube-scanner": "^2.8.0",
+    "twig": "^1.15.4",
     "typescript": "^4.2.4"
   },
   "peerDependencies": {},

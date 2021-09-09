@@ -3,7 +3,9 @@
     {
       "target_name": "main",
       "sources": [
-        "src/main.cc"
+{% for file in srcFiles %}
+        "{{file}}"
+{% endfor %}
       ],
       "link_settings": {},
       "include_dirs": [
@@ -11,7 +13,7 @@
       ],
       'defines': ['NAPI_DISABLE_CPP_EXCEPTIONS'],
       "cflags": [
-        "-std=c++11"
+        "-std={{cppStandards[0]}}"{#  -x c++ #}
       ]
     }
   ]
