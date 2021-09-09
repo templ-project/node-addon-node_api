@@ -2,14 +2,14 @@
 #define BUILDING_NODE_EXTENSION
 #endif
 
-#define if_unmet_nan_throw(call, thrower, error)                                                                       \
-  if (!(call)) {                                                                                                       \
-    thrower(error);                                                                                                    \
+#define if_unmet_nan_throw(call, thrower, error)                               \
+  if (!(call)) {                                                               \
+    thrower(error);                                                            \
   }
 
 #include <napi.h>
 
-Napi::String Method(const Napi::CallbackInfo &info) {
+Napi::String Method(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
   std::string result = "Hello ";
@@ -18,7 +18,8 @@ Napi::String Method(const Napi::CallbackInfo &info) {
     result += "World";
   } else {
     if (!info[0].IsString()) {
-      Napi::TypeError::New(env, "Invalid argument type; expecting string.").ThrowAsJavaScriptException();
+      Napi::TypeError::New(env, "Invalid argument type; expecting string.")
+          .ThrowAsJavaScriptException();
       return Napi::String::New(env, "");
     }
   }
@@ -30,7 +31,8 @@ Napi::String Method(const Napi::CallbackInfo &info) {
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
-  exports.Set(Napi::String::New(env, "hello"), Napi::Function::New(env, Method));
+  exports.Set(Napi::String::New(env, "hello"),
+              Napi::Function::New(env, Method));
   return exports;
 }
 
