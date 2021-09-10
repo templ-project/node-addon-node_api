@@ -6,7 +6,7 @@
       "request": "launch",
       "name": "(Darwin/Linux/Windows :: mocha + lldb) Launch All",
       "preLaunchTask": "npm: build:dev",
-      "program": "{{nodePath}}",
+      "program": "node",
       "args": ["${workspaceFolder}/node_modules/mocha/bin/mocha"],
       "cwd": "${workspaceFolder}"
     }{% for file in testFiles %},
@@ -15,7 +15,7 @@
       "request": "launch",
       "name": "(Darwin/Linux/Windows :: mocha + lldb) Launch '{{file}}'",
       "preLaunchTask": "npm: build:dev",
-      "program": "{{nodePath}}",
+      "program": "node",
       "args": ["${workspaceFolder}/node_modules/mocha/bin/mocha", "{{file}}"],
       "cwd": "${workspaceFolder}"
     }{% endfor %}{% if platform == 'linux' %},
@@ -42,7 +42,7 @@
       "request": "launch",
       "name": "(Windows / cppvsdbg) Launch All",
       "preLaunchTask": "npm: build:dev",
-      "program": "{{nodePath}}",
+      "program": "node",
       "args": ["${workspaceFolder}/node_modules/mocha/bin/mocha"],
       "cwd": "${workspaceFolder}"
     }{% for file in testFiles %},
@@ -51,7 +51,7 @@
       "request": "launch",
       "name": "(Windows / cppvsdbg) Launch '{{file}}'",
       "preLaunchTask": "npm: build:dev",
-      "program": "{{nodePath}}",
+      "program": "node",
       "args": ["${workspaceFolder}/node_modules/mocha/bin/mocha", "{{file}}"],
       "cwd": "${workspaceFolder}"
     }{% endfor %}{% endif %}
