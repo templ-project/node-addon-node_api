@@ -4,11 +4,11 @@
   "description": "NodeJs Addon Project Template using Node Addon Api",
   "main": "dist/index.js",
   "scripts": {
-    "build:addon": "npm run build:addon:cmake -- --verbose",
+    "build:addon": "npm run build:addon:xmake -- --verbose",
     "build:addon:cmake": "npx cmake-js configure && npx cmake-js build",
     "build:addon:gyp": "npx node-gyp configure && npx node-gyp build",
     "build:addon:xmake": "xmake",
-    "build:dev": "npm run build:addon -- --debug",
+    "build:dev": "npm run build:addon",
     "build": "npm run build:addon",
     "ca:lint": "npm run prettier:write && npm run lint:write",
     "ca:quality": "npm run jscpd && npm run depcruise",
@@ -33,7 +33,7 @@
     "prebuildc:dev": "npm run clean",
     "prebuildc": "npm run clean",
     "prerelease": "npm run build",
-    "pretest": "npm run build",
+    "pretest:single": "npm run build",
     "prettier:check": "npm run prettier:cpp:check && npm run prettier:js:check",
     "prettier:cpp:check": "npm run prettier:cpp -- -dry-run",
     "prettier:cpp:write": "npm run prettier:cpp -- -i",
@@ -49,7 +49,8 @@
     "test:single": "cross-env NODE_ENV=test nyc --reporter=html --reporter=lcov --reporter=text --extension .js mocha --forbid-only",
     "test:watch": "npm run test -- --watch",
     "test": "npm run test:single -- './test/**/*.test.js'",
-    "install": "npm run build:addon "
+    "install": "npm run build:addon ",
+    "prebuild:dev": "xmake f -m debug"
   },
   "repository": {
     "type": "git",
